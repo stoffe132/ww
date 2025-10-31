@@ -4,58 +4,66 @@
 <meta charset="utf-8">
 <title>Dog Clicker</title>
 <style>
-body {
-  margin:0;
-  background:#111;
-  color:#fff;
-  font-family:Arial, sans-serif;
-  text-align:center;
-}
-#count {
-  font-size:40px;
-  margin:20px 0;
-}
-img {
-  width:300px;
-  height:auto;
-  cursor:pointer;
-  user-select:none;
-}
-button {
-  margin-top:20px;
-  padding:10px 18px;
-  font-size:18px;
-}
+body{margin:0;background:#111;color:#fff;font-family:Arial;text-align:center}
+#count{font-size:40px;margin:20px 0}
+img{width:300px;cursor:pointer;user-select:none}
+button{margin:5px;padding:10px 16px;font-size:16px}
 </style>
 </head>
 <body>
 
 <h1>Dog Clicker</h1>
 <div id="count">0</div>
-<img id="dog" src="dog.jpg" alt="dog">
-<br>
-<button id="upgrade">Uppgradera (kostar 50)</button>
+<img id="dog" src="dog.jpg" alt="dog"><br>
+
+<button id="upgradeClick">Klickkraft +1 (kostar 50)</button>
+<button id="upgradeAuto1">+1/sek (kostar 100)</button>
+<button id="upgradeAuto2">+5/sek (kostar 500)</button>
 
 <script>
 let count = 0;
 let clickPower = 1;
+let passive = 0;
 
 const countEl = document.getElementById("count");
 const dog = document.getElementById("dog");
-const upgrade = document.getElementById("upgrade");
+const u1 = document.getElementById("upgradeClick");
+const a1 = document.getElementById("upgradeAuto1");
+const a2 = document.getElementById("upgradeAuto2");
 
 dog.addEventListener("click", () => {
   count += clickPower;
   countEl.textContent = count;
 });
 
-upgrade.addEventListener("click", () => {
-  if (count >= 50) {
+u1.addEventListener("click", () => {
+  if(count >= 50){
     count -= 50;
     clickPower++;
     countEl.textContent = count;
   }
 });
+
+a1.addEventListener("click", () => {
+  if(count >= 100){
+    count -= 100;
+    passive += 1;
+    countEl.textContent = count;
+  }
+});
+
+a2.addEventListener("click", () => {
+  if(count >= 500){
+    count -= 500;
+    passive += 5;
+    countEl.textContent = count;
+  }
+});
+
+setInterval(() => {
+  count += passive;
+  countEl.textContent = count;
+},1000);
 </script>
 
 </body>
