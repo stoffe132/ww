@@ -6,7 +6,7 @@
 <style>
 body{margin:0;background:#111;color:#fff;font-family:Arial;text-align:center}
 #count{font-size:40px;margin:20px 0}
-img{width:300px;cursor:pointer;user-select:none}
+img{width:300px;cursor:pointer;user-select:none;transition:transform 0.1s}
 button{margin:5px;padding:10px 16px;font-size:16px}
 </style>
 </head>
@@ -16,54 +16,69 @@ button{margin:5px;padding:10px 16px;font-size:16px}
 <div id="count">0</div>
 <img id="dog" src="dog.jpg" alt="dog"><br>
 
-<button id="upgradeClick">Klickkraft +1 (kostar 50)</button>
-<button id="upgradeAuto1">+1/sek (kostar 100)</button>
-<button id="upgradeAuto2">+5/sek (kostar 500)</button>
+<button id="upgradeClick">Klickkraft +1 (50)</button>
+<button id="upgradeAuto1">+1/sek (100)</button>
+<button id="upgradeAuto2">+5/sek (500)</button>
+<button id="upgradeAuto3">+20/sek (2000)</button>
+<button id="upgradeAuto4">+100/sek (10000)</button>
+
+<audio id="clickSound" src="click.mp3"></audio>
+<audio id="buySound" src="buy.mp3"></audio>
 
 <script>
-let count = 0;
-let clickPower = 1;
-let passive = 0;
+let count = parseInt(localStorage.getItem("count")) || 0;
+let clickPower = parseInt(localStorage.getItem("clickPower")) || 1;
+let passive = parseInt(localStorage.getItem("passive")) || 0;
 
 const countEl = document.getElementById("count");
 const dog = document.getElementById("dog");
 const u1 = document.getElementById("upgradeClick");
 const a1 = document.getElementById("upgradeAuto1");
 const a2 = document.getElementById("upgradeAuto2");
+const a3 = document.getElementById("upgradeAuto3");
+const a4 = document.getElementById("upgradeAuto4");
+
+const clickSound = document.getElementById("clickSound");
+const buySound = document.getElementById("buySound");
+
+function updateDisplay(){ countEl.textContent = count; }
 
 dog.addEventListener("click", () => {
   count += clickPower;
-  countEl.textContent = count;
+  clickSound.play();
+  dog.style.transform = "scale(1.1)";
+  setTimeout(()=>dog.style.transform="scale(1)",100);
+  updateDisplay();
 });
 
-u1.addEventListener("click", () => {
-  if(count >= 50){
-    count -= 50;
-    clickPower++;
-    countEl.textContent = count;
+function buy(cost, func){
+  if(count >= cost){
+    count -= cost;
+    func();
+    buySound.play();
+    updateDisplay();
   }
-});
+}
 
-a1.addEventListener("click", () => {
-  if(count >= 100){
-    count -= 100;
-    passive += 1;
-    countEl.textContent = count;
-  }
-});
+u1.addEventListener("click", ()=>buy(50, ()=>clickPower++));
+a1.addEventListener("click", ()=>buy(100, ()=>passive+=1));
+a2.addEventListener("click", ()=>buy(500, ()=>passive+=5));
+a3.addEventListener("click", ()=>buy(2000, ()=>passive+=20));
+a4.addEventListener("click", ()=>buy(10000, ()=>passive+=100));
 
-a2.addEventListener("click", () => {
-  if(count >= 500){
-    count -= 500;
-    passive += 5;
-    countEl.textContent = count;
-  }
-});
-
-setInterval(() => {
+setInterval(()=>{
   count += passive;
-  countEl.textContent = count;
+  updateDisplay();
+  save();
 },1000);
+
+function save(){
+  localStorage.setItem("count", count);
+  localStorage.setItem("clickPower", clickPower);
+  localStorage.setItem("passive", passive);
+}
+
+updateDisplay();
 </script>
 
 </body>
