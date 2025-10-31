@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Dog Clicker</title>
+<style>
+body {
+  margin:0;
+  background:#111;
+  color:#fff;
+  font-family:Arial, sans-serif;
+  text-align:center;
+}
+#count {
+  font-size:40px;
+  margin:20px 0;
+}
+img {
+  width:300px;
+  height:auto;
+  cursor:pointer;
+  user-select:none;
+}
+button {
+  margin-top:20px;
+  padding:10px 18px;
+  font-size:18px;
+}
+</style>
+</head>
+<body>
+
+<h1>Dog Clicker</h1>
+<div id="count">0</div>
+<img id="dog" src="dog.jpg" alt="dog">
+<br>
+<button id="upgrade">Uppgradera (kostar 50)</button>
+
+<script>
+let count = 0;
+let clickPower = 1;
+
+const countEl = document.getElementById("count");
+const dog = document.getElementById("dog");
+const upgrade = document.getElementById("upgrade");
+
+dog.addEventListener("click", () => {
+  count += clickPower;
+  countEl.textContent = count;
+});
+
+upgrade.addEventListener("click", () => {
+  if (count >= 50) {
+    count -= 50;
+    clickPower++;
+    countEl.textContent = count;
+  }
+});
+</script>
+
+</body>
+</html>
