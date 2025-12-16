@@ -7,7 +7,8 @@
 body{margin:0;background:#111;color:#fff;font-family:Arial;text-align:center}
 #count{font-size:40px;margin:20px 0}
 img{width:300px;cursor:pointer;user-select:none;transition:transform 0.1s}
-button{margin:5px;padding:10px 16px;font-size:16px}
+#upgrades{max-height:600px;overflow-y:auto;margin:10px auto;width:220px;text-align:center}
+button{margin:5px;padding:10px 16px;font-size:16px;width:200px;display:block;margin-left:auto;margin-right:auto}
 </style>
 </head>
 <body>
@@ -16,11 +17,7 @@ button{margin:5px;padding:10px 16px;font-size:16px}
 <div id="count">0</div>
 <img id="dog" src="dog.jpg" alt="dog"><br>
 
-<button id="upgradeClick">Klickkraft +1 (50)</button>
-<button id="upgradeAuto1">+1/sek (100)</button>
-<button id="upgradeAuto2">+5/sek (500)</button>
-<button id="upgradeAuto3">+20/sek (2000)</button>
-<button id="upgradeAuto4">+100/sek (10000)</button>
+<div id="upgrades"></div>
 
 <audio id="clickSound" src="click.mp3"></audio>
 <audio id="buySound" src="buy.mp3"></audio>
@@ -32,14 +29,46 @@ let passive = parseInt(localStorage.getItem("passive")) || 0;
 
 const countEl = document.getElementById("count");
 const dog = document.getElementById("dog");
-const u1 = document.getElementById("upgradeClick");
-const a1 = document.getElementById("upgradeAuto1");
-const a2 = document.getElementById("upgradeAuto2");
-const a3 = document.getElementById("upgradeAuto3");
-const a4 = document.getElementById("upgradeAuto4");
+const upgradesContainer = document.getElementById("upgrades");
 
 const clickSound = document.getElementById("clickSound");
 const buySound = document.getElementById("buySound");
+
+// Skapa uppgraderingar dynamiskt
+let upgrades = [{name:"Klickkraft +1", cost:50, effect:()=>clickPower++, multiplier:1.15}];
+
+let baseCost = 100;
+let basePassive = 1;
+for(let i=1;i<=49;i++){
+  upgrades.push({
+    name: `+${basePassive}/sek`,
+    cost: baseCost,
+    effect:()=> passive += basePassive,
+    multiplier: 1.25 // prisökning varje gång den köps
+  });
+  baseCost = Math.floor(baseCost * 2.5); 
+  basePassive = basePassive * 2;
+}
+
+// Skapa knappar i HTML
+upgrades.forEach((u, index)=>{
+  let btn = document.createElement("button");
+  btn.id = "upgrade"+index;
+  btn.textContent = `${u.name} (kostar ${u.cost})`;
+  
+  btn.addEventListener("click", ()=>{
+    if(count >= u.cost){
+      count -= u.cost;
+      u.effect();
+      u.cost = Math.floor(u.cost * u.multiplier); // pris ökar dynamiskt
+      btn.textContent = `${u.name} (kostar ${u.cost})`;
+      buySound.play();
+      updateDisplay();
+      save();
+    }
+  });
+  upgradesContainer.appendChild(btn);
+});
 
 function updateDisplay(){ countEl.textContent = count; }
 
@@ -50,21 +79,6 @@ dog.addEventListener("click", () => {
   setTimeout(()=>dog.style.transform="scale(1)",100);
   updateDisplay();
 });
-
-function buy(cost, func){
-  if(count >= cost){
-    count -= cost;
-    func();
-    buySound.play();
-    updateDisplay();
-  }
-}
-
-u1.addEventListener("click", ()=>buy(50, ()=>clickPower++));
-a1.addEventListener("click", ()=>buy(100, ()=>passive+=1));
-a2.addEventListener("click", ()=>buy(500, ()=>passive+=5));
-a3.addEventListener("click", ()=>buy(2000, ()=>passive+=20));
-a4.addEventListener("click", ()=>buy(10000, ()=>passive+=100));
 
 setInterval(()=>{
   count += passive;
