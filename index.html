@@ -9,8 +9,6 @@ body{margin:0;background:#111;color:#fff;font-family:Arial;text-align:center}
 img{width:300px;cursor:pointer;user-select:none;transition:transform 0.1s}
 #upgrades{max-height:600px;overflow-y:auto;margin:10px auto;width:220px;text-align:center}
 button{margin:5px;padding:10px 16px;font-size:16px;width:200px;display:block;margin-left:auto;margin-right:auto}
-/* Vänster hörn-knapp */
-#specialBtn{position:fixed;top:20px;left:20px;padding:10px 16px;font-size:16px;z-index:1000}
 </style>
 </head>
 <body>
@@ -18,9 +16,6 @@ button{margin:5px;padding:10px 16px;font-size:16px;width:200px;display:block;mar
 <h1>Dog Clicker</h1>
 <div id="count">0</div>
 <img id="dog" src="dog.jpg" alt="dog"><br>
-
-<!-- Vänster hörn-knapp -->
-<button id="specialBtn">+1000 poäng</button>
 
 <div id="upgrades"></div>
 
@@ -49,7 +44,7 @@ for(let i=1;i<=49;i++){
     name: `+${basePassive}/sek`,
     cost: baseCost,
     effect:()=> passive += basePassive,
-    multiplier: 1.25
+    multiplier: 1.25 // prisökning varje gång den köps
   });
   baseCost = Math.floor(baseCost * 2.5); 
   basePassive = basePassive * 2;
@@ -73,14 +68,6 @@ upgrades.forEach((u, index)=>{
     }
   });
   upgradesContainer.appendChild(btn);
-});
-
-// Special knapp som sparas i localStorage
-const specialBtn = document.getElementById("specialBtn");
-specialBtn.addEventListener("click", ()=>{
-  count += 1000; // ger 1000 poäng
-  updateDisplay();
-  save();
 });
 
 function updateDisplay(){ countEl.textContent = count; }
