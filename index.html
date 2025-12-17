@@ -67,7 +67,7 @@ const clickSound = document.getElementById("clickSound");
 const buySound = document.getElementById("buySound");
 
 // Skapar uppgraderingar dynamiskt
-let upgrades = [{name:"Klickkraft +1", cost:50n, effect:()=>clickPower+=1n, multiplier:115n}]; // multiplier i procent
+let upgrades = [{name:"Klickkraft +1", cost:50n, effect:()=>clickPower+=1n, multiplier:115n}];
 
 let baseCost = 100n;
 let basePassive = 1n;
@@ -79,8 +79,8 @@ for(let i=1;i<=49;i++){
     effect:()=> passive += basePassive,
     multiplier:125n
   });
-  baseCost = baseCost * 250n / 100n; // samma som *2.5
-  basePassive *= 2n;
+  baseCost = baseCost * 250n / 100n; // pris ökar
+  basePassive *= 2n; // passiv inkomst ökar först nästa iteration
 }
 
 // Skapar knappar för uppgraderingar
