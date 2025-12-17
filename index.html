@@ -9,6 +9,7 @@ body{margin:0;background:#111;color:#fff;font-family:Arial;text-align:center}
 img{width:300px;cursor:pointer;user-select:none;transition:transform 0.1s}
 #upgrades{max-height:600px;overflow-y:auto;margin:10px auto;width:220px;text-align:center}
 button{margin:5px;padding:10px 16px;font-size:16px;width:200px;display:block;margin-left:auto;margin-right:auto}
+#resetBtn{position:fixed;top:20px;left:20px;padding:10px 16px;font-size:16px;z-index:1000;width:auto}
 </style>
 </head>
 <body>
@@ -16,6 +17,8 @@ button{margin:5px;padding:10px 16px;font-size:16px;width:200px;display:block;mar
 <h1>Dog Clicker</h1>
 <div id="count">0</div>
 <img id="dog" src="dog.jpg" alt="dog"><br>
+
+<button id="resetBtn">Radera data</button>
 
 <div id="upgrades"></div>
 
@@ -34,23 +37,22 @@ const upgradesContainer = document.getElementById("upgrades");
 const clickSound = document.getElementById("clickSound");
 const buySound = document.getElementById("buySound");
 
-// Skapa uppgraderingar dynamiskt
 let upgrades = [{name:"Klickkraft +1", cost:50, effect:()=>clickPower++, multiplier:1.15}];
 
 let baseCost = 100;
 let basePassive = 1;
+
 for(let i=1;i<=49;i++){
   upgrades.push({
     name: `+${basePassive}/sek`,
     cost: baseCost,
     effect:()=> passive += basePassive,
-    multiplier: 1.25 // prisökning varje gång den köps
+    multiplier: 1.25
   });
-  baseCost = Math.floor(baseCost * 2.5); 
+  baseCost = Math.floor(baseCost * 2.5);
   basePassive = basePassive * 2;
 }
 
-// Skapa knappar i HTML
 upgrades.forEach((u, index)=>{
   let btn = document.createElement("button");
   btn.id = "upgrade"+index;
@@ -60,7 +62,7 @@ upgrades.forEach((u, index)=>{
     if(count >= u.cost){
       count -= u.cost;
       u.effect();
-      u.cost = Math.floor(u.cost * u.multiplier); // pris ökar dynamiskt
+      u.cost = Math.floor(u.cost * u.multiplier);
       btn.textContent = `${u.name} (kostar ${u.cost})`;
       buySound.play();
       updateDisplay();
@@ -69,8 +71,6 @@ upgrades.forEach((u, index)=>{
   });
   upgradesContainer.appendChild(btn);
 });
-
-function updateDisplay(){ countEl.textContent = count; }
 
 dog.addEventListener("click", () => {
   count += clickPower;
@@ -85,6 +85,13 @@ setInterval(()=>{
   updateDisplay();
   save();
 },1000);
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  localStorage.clear();
+  location.reload();
+});
+
+function updateDisplay(){ countEl.textContent = count; }
 
 function save(){
   localStorage.setItem("count", count);
