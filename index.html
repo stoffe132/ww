@@ -8,34 +8,9 @@ body{margin:0;background:#111;color:#fff;font-family:Arial;text-align:center}
 #count{font-size:40px;margin:20px 0}
 #idle{font-size:20px;margin-bottom:10px;color:#ccc}
 img{width:300px;cursor:pointer;user-select:none;transition:transform 0.1s}
-
-#upgrades{
-  max-height:600px;
-  overflow-y:auto;
-  margin:10px auto;
-  width:220px;
-  text-align:center;
-}
-
-button{
-  margin:5px;
-  padding:10px 16px;
-  font-size:16px;
-  width:200px;
-  display:block;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-#resetBtn{
-  position:fixed;
-  top:20px;
-  left:20px;
-  width:auto !important;
-  display:inline-block !important;
-  padding:10px 16px;
-  z-index:9999;
-}
+#upgrades{max-height:600px;overflow-y:auto;margin:10px auto;width:220px;text-align:center}
+button{margin:5px;padding:10px 16px;font-size:16px;width:200px;display:block;margin-left:auto;margin-right:auto}
+#resetBtn{position:fixed;top:20px;left:20px;width:auto !important;display:inline-block !important;padding:10px 16px;z-index:9999}
 </style>
 </head>
 <body>
@@ -44,9 +19,7 @@ button{
 <div id="count">0</div>
 <div id="idle">Idle: 0/sek</div>
 <img id="dog" src="dog.jpg" alt="dog"><br>
-
 <button id="resetBtn">Radera data</button>
-
 <div id="upgrades"></div>
 
 <audio id="clickSound" src="click.mp3"></audio>
@@ -66,24 +39,32 @@ const upgradesContainer = document.getElementById("upgrades");
 const clickSound = document.getElementById("clickSound");
 const buySound = document.getElementById("buySound");
 
-// Skapar uppgraderingar dynamiskt
-let upgrades = [{name:"Klickkraft +1", cost:50n, effect:()=>clickPower+=1n, multiplier:115n}];
+// Uppgraderingar
+let upgrades = [];
 
+// Klickkraft
+upgrades.push({
+  name: "Klickkraft +1",
+  cost: 50n,
+  effect: ()=> clickPower += 1n,
+  multiplier: 115n
+});
+
+// Passiv inkomst
 let baseCost = 100n;
-let basePassive = 1n;
-
-for(let i=1;i<=49;i++){
+let basePassive = 1n; // första uppgradering ger exakt 1/sek
+for(let i=0; i<49; i++){
   upgrades.push({
     name: `+${basePassive}/sek`,
     cost: baseCost,
-    effect:()=> passive += basePassive,
-    multiplier:125n
+    effect: ()=> passive += basePassive,
+    multiplier: 125n
   });
   baseCost = baseCost * 250n / 100n; // pris ökar
-  basePassive *= 2n; // passiv inkomst ökar först nästa iteration
+  basePassive *= 2n; // multiplicera först nästa iteration
 }
 
-// Skapar knappar för uppgraderingar
+// Skapar knappar
 upgrades.forEach((u, index)=>{
   let btn = document.createElement("button");
   btn.id = "upgrade"+index;
@@ -93,7 +74,7 @@ upgrades.forEach((u, index)=>{
     if(count >= u.cost){
       count -= u.cost;
       u.effect();
-      u.cost = u.cost * u.multiplier / 100n; // dynamiskt pris
+      u.cost = u.cost * u.multiplier / 100n;
       btn.textContent = `${u.name} (kostar ${u.cost})`;
       buySound.play();
       updateDisplay();
@@ -104,15 +85,15 @@ upgrades.forEach((u, index)=>{
 });
 
 // Klick på hunden
-dog.addEventListener("click", () => {
+dog.addEventListener("click", ()=>{
   count += clickPower;
   clickSound.play();
-  dog.style.transform = "scale(1.1)";
+  dog.style.transform="scale(1.1)";
   setTimeout(()=>dog.style.transform="scale(1)",100);
   updateDisplay();
 });
 
-// Passiv inkomst varje sekund
+// Passiv inkomst
 setInterval(()=>{
   count += passive;
   updateDisplay();
@@ -125,13 +106,13 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
   location.reload();
 });
 
-// Uppdaterar display
+// Display
 function updateDisplay(){
   countEl.textContent = count.toString();
   idleEl.textContent = passive > 0 ? `Idle: ${passive}/sek` : "Ingen passiv inkomst";
 }
 
-// Sparar data
+// Sparfunktion
 function save(){
   localStorage.setItem("count", count.toString());
   localStorage.setItem("clickPower", clickPower.toString());
